@@ -85,7 +85,7 @@ def backuping():
 
     subprocess.run([
         'sqlcmd', '-i', SQL_SCRIPT  # вызов программы со скриптом как параметр для выгрузки
-    ], timeout=600, encoding='CP866')
+    ], timeout=600, encoding='1251')
 
     print_log("Окончание резервного копирования базы 'ПО Участок инкассации'")
 
