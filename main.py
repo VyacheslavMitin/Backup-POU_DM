@@ -13,7 +13,6 @@ import sys
 import glob
 import shutil
 
-
 PC_LOGIN = os.getlogin()
 mitin = 'Администратор'
 borovikov = 'user'
@@ -34,13 +33,14 @@ cfg = configparser.ConfigParser()
 cfg.read('settings.ini')  # чтение локального конфига
 TEMP_DIR = cfg.get('PATHS', 'temp_dir')
 LOGS_DIR = cfg.get('PATHS', 'logs_dir')
-SQL_SCRIPT = cfg.get('PATHS', 'sql_script')
 EXE_7Z = cfg.get('PATHS', '7zip')
 PASS_7Z = cfg.get('PATHS', 'pass_7z')
 if CITY == 'ulyanovsk':
     BACKUP_DIR = cfg.get('PATHS', 'backup_dir_ul')
+    SQL_SCRIPT = cfg.get('PATHS', 'sql_script_ul')
 elif CITY == 'dimitrovgrad':
     BACKUP_DIR = cfg.get('PATHS', 'backup_dir_dm')
+    SQL_SCRIPT = cfg.get('PATHS', 'sql_script_dm')
 
 
 # Функции
@@ -62,32 +62,44 @@ def print_log(text, line_before=False, line_after=False):
         print()  # пустая строка
 
 
+def make_dirs():
+    """Функция создания технических каталогов"""
+    pass  # TODO сделать создание каталогов
+
+
+def logging():
+    """Функция логирования"""
+    pass  # TODO сделать логирование текстовым файлом
+
+
 def cleaning_temp():
     print_log("Очистка временной папки")
-    for files in glob.glob(TEMP_DIR + '/' + '*'):
+    for files in glob.glob(TEMP_DIR + '//' + '*'):
         os.remove(files)
 
 
 def backuping():
-    """Функция резервного копирования"""
-    cleaning_temp()
+    """Функция резервного копирования баз 'ПО Участок инкассации'"""
+    cleaning_temp()  # очистка временной папки
     print_log("Старт резервного копирования базы 'ПО Участок инкассации'")
 
     subprocess.run([
         'sqlcmd', '-i', SQL_SCRIPT  # вызов программы со скриптом как параметр для выгрузки
-    ], timeout=600)
+    ], timeout=600, encoding='CP866')
+
+    print_log("Окончание резервного копирования базы 'ПО Участок инкассации'")
 
 
 def compressing(base=''):
-    """Функция сжатия базы"""
-    print_log("Сжатие баз 'ПО Участок инкассации'")
+    """Функция сжатия баз"""
+    print_log("Старт компрессии баз 'ПО Участок инкассации'")
+
     if CITY == 'ulyanovsk':
         base = 'UL'
     elif CITY == 'dimitrovgrad':
         base = 'DM'
 
-    for bases in glob.glob(TEMP_DIR + '/' + f'POU_{base}_*.bak'):
-        print(bases)
+    for bases in glob.glob(TEMP_DIR + '//' + f'POU_{base}_*.bak'):
         subprocess.run([
             EXE_7Z,
             "a", "-t7z", "-m0=LZMA2:mt=6", "-mx=0", "-ssw",  # параметры для работы 7Zip
@@ -96,14 +108,18 @@ def compressing(base=''):
             "-p" + PASS_7Z
         ], timeout=600)
 
+    print_log("Окончание компрессии баз 'ПО Участок инкассации'")
+
 
 def moving_files():
+    """Функция перемещения баз"""
     print("Перемещение сжатых баз 'ПО Участок инкассации'")
-    for files in glob.glob(TEMP_DIR + '/' + f'*.{ARCH_EXT}'):
+    for files in glob.glob(TEMP_DIR + '//' + f'*.{ARCH_EXT}'):
         shutil.move(files, BACKUP_DIR)
-    cleaning_temp()
+    cleaning_temp()  # очистка временной папки
 
 
+# Старт
 print("Начало работы скрипта по резеврному копированию баз 'ПО Участок инкассации'")
 backuping()
 compressing()
