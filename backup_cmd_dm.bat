@@ -1,0 +1,1 @@
+start python C:\POU_SQL_Backup\main.py
