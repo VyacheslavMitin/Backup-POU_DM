@@ -85,7 +85,7 @@ def compressing(base=''):
     elif CITY == 'dimitrovgrad':
         base = 'DM'
 
-    os.chdir(TEMP_DIR)  # переход во временную папку
+    os.chdir(TEMP_DIR)  # переход во временную папку для сжатия без каталога
 
     for bases in glob.glob(f'POU_{base}_*.bak'):  # архивация с паролем
         subprocess.run([
@@ -125,8 +125,7 @@ def moving_files():
     cleaning_temp()  # очистка временной папки
 
 
-# Старт
-if __name__ == '__main__':
+if __name__ == '__main__':  # Старт
     print("Начало работы скрипта по резеврному копированию баз 'ПО Участок инкассации'")
     make_dirs()
     backuping()
