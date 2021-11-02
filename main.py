@@ -41,8 +41,8 @@ if CITY == 'ulyanovsk':
     BACKUP_DIR_CLOUD = cfg.get('PATHS', 'backup_dir_ul_yandex')
     SQL_SCRIPT = cfg.get('PATHS', 'sql_script_ul')
 elif CITY == 'dimitrovgrad':
-    BACKUP_DIR_CLOUD = cfg.get('PATHS', 'backup_dir_dm')
-    SQL_SCRIPT = cfg.get('PATHS', 'sql_script_dm_yandex')
+    BACKUP_DIR_CLOUD = cfg.get('PATHS', 'backup_dir_dm_yandex')
+    SQL_SCRIPT = cfg.get('PATHS', 'sql_script_dm')
 
 
 # Функции
@@ -103,7 +103,7 @@ def compressing(base=''):
 
 def moving_files():
     """Функция перемещения баз"""
-    print("Копирование и перемещение сжатых баз 'ПО Участок инкассации'")
+    print_log("Копирование и перемещение сжатых баз 'ПО Участок инкассации'")
 
     def working_with_archives(mode=''):
         """Функция работы с файлами"""
@@ -126,9 +126,11 @@ def moving_files():
 
 
 if __name__ == '__main__':  # Старт
-    print("Начало работы скрипта по резеврному копированию баз 'ПО Участок инкассации'")
+    print_log("Начало работы скрипта по резеврному копированию баз 'ПО Участок инкассации'",
+              line_before=True, line_after=True)
     make_dirs()
     backuping()
     compressing()
     moving_files()
-    print("Окончание работы скрипта по резеврному копированию баз 'ПО Участок инкассации'")
+    print_log("Окончание работы скрипта по резервному копированию баз 'ПО Участок инкассации'",
+              line_before=True, line_after=True)
