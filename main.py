@@ -113,8 +113,7 @@ def moving_files():
     def working_with_archives(mode=''):
         """Функция работы с файлами"""
         archives_list = []  # создание листа с объектами - сжатыми базами
-        for archives in glob.glob(TEMP_DIR + '//' + f'*.{ARCH_EXT}'):
-            archives_list.append(archives)
+        [archives_list.append(archives) for archives in glob.glob(TEMP_DIR + '//' + f'*.{ARCH_EXT}')]
 
         if mode == 'copy':  # копия на NAS
             [shutil.copy(archives, BACKUP_DIR_NAS) for archives in archives_list]
