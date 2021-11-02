@@ -1,7 +1,7 @@
 # Модуль резервного копирования баз ПО 'Участок инкассации'
 # Python 3.8
 __author__ = 'Vyacheslav Mitin <vyacheslav.mitin@gmail.com>'
-__version__ = '1 - разработка'
+__version__ = '3'
 
 # Импорты
 from datetime import datetime
@@ -13,22 +13,21 @@ import glob
 import shutil
 from print_log import *
 
-PC_LOGIN = os.getlogin()
-mitin = 'Администратор'
-borovikov = 'user'
+ULYANOVSK = 'Администратор'  # имя на сервере 1С-V8
+DIMITROVGRAD = 'user'  # имя у Боровикова
 
-if PC_LOGIN == mitin:
+if os.getlogin() == ULYANOVSK:
     CITY = 'ulyanovsk'
-elif PC_LOGIN == borovikov:
+elif os.getlogin() == DIMITROVGRAD:
     CITY = 'dimitrovgrad'
 else:  # выход с ошибкой если не то имя логина в систему
-    sys.exit("Не то имя логина в систему")
+    sys.exit("Не подходящий логин в систему")
 
 ARCH_EXT = 'SevenZ'
-NOW_DATE = datetime.now().strftime('%d.%m.%Y')  # Текущая дата для работы с файлами и каталогами
-NOW_TIME = datetime.now().strftime('%H-%M')  # Текущее время
-NOW_WEEKDAY = datetime.now().strftime('%A')  # Текущий день недели
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+NOW_DATE = datetime.now().strftime('%d.%m.%Y')  # Текущая дата для работы с файлами и каталогами в формате 01.01.2021
+NOW_TIME = datetime.now().strftime('%H-%M')  # Текущее время в формате 15-00
+NOW_WEEKDAY = datetime.now().strftime('%A')  # Текущий день недели в формате Monday
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))  # путь к папке с модулем
 
 cfg = configparser.ConfigParser()
 cfg.read('settings.ini')  # чтение локального конфига
@@ -48,9 +47,10 @@ elif CITY == 'dimitrovgrad':
 # Функции
 def make_dirs():
     """Функция создания каталогов"""
+    print_log("Создание каталогов")
+
     dirs = [TEMP_DIR, LOGS_DIR]
-    for dir_ in dirs:
-        os.makedirs(os.path.join(SCRIPT_DIR, dir_), exist_ok=True)
+    [os.makedirs(os.path.join(SCRIPT_DIR, dir_), exist_ok=True) for dir_ in dirs]
 
 
 def logging():
@@ -59,9 +59,10 @@ def logging():
 
 
 def cleaning_temp():
+    """Функция очистки временной папки"""
     print_log("Очистка временной папки")
-    for files in glob.glob(TEMP_DIR + '//' + '*'):
-        os.remove(files)
+
+    [os.remove(files) for files in glob.glob(TEMP_DIR + '//' + '*')]
 
 
 def backuping():
@@ -69,9 +70,11 @@ def backuping():
     cleaning_temp()  # очистка временной папки
     print_log("Старт резервного копирования базы 'ПО Участок инкассации'")
 
+    print_log("Работа SQL, начало:", line_before=True)
     subprocess.run([
         'sqlcmd', '-i', SQL_SCRIPT  # вызов программы со скриптом как параметр для выгрузки
     ], timeout=600)  # , encoding='1251')
+    print_log("Работа SQL, конец", line_after=True)
 
     print_log("Окончание резервного копирования базы 'ПО Участок инкассации'")
 
@@ -87,6 +90,7 @@ def compressing(base=''):
 
     os.chdir(TEMP_DIR)  # переход во временную папку для сжатия без каталога
 
+    print_log("Работа архиватора, начало:", line_before=True)
     for bases in glob.glob(f'POU_{base}_*.bak'):  # архивация с паролем
         subprocess.run([
             EXE_7Z,
@@ -95,6 +99,7 @@ def compressing(base=''):
             bases,  # файл для архивирования
             "-p" + PASS_7Z
         ], timeout=600)
+    print_log("Работа архиватора, конец", line_after=True)
 
     os.chdir(SCRIPT_DIR)  # возврат в папку скрипта
 
@@ -119,18 +124,18 @@ def moving_files():
     if CITY == 'ulyanovsk':
         working_with_archives(mode='copy')
         working_with_archives(mode='move')
-    elif CITY == 'dimitrovgrad':
+    elif CITY == 'dimitrovgrad':  # только перемещения в облако
         working_with_archives(mode='move')
 
     cleaning_temp()  # очистка временной папки
 
 
-if __name__ == '__main__':  # Старт
-    print_log("Начало работы скрипта по резеврному копированию баз 'ПО Участок инкассации'",
+if __name__ == '__main__':  # старт
+    print_log("Начало работы скрипта по резервному копированию баз 'ПО Участок инкассации'",
               line_before=True, line_after=True)
-    make_dirs()
-    backuping()
-    compressing()
-    moving_files()
+    make_dirs()  # создание каталогов
+    backuping()  # резервная копия SQL базы через SQLCMD в .bak файл
+    compressing()  # сжатие файла .bak в архив 7zip
+    moving_files()  # копирвоание и пермещение файлов
     print_log("Окончание работы скрипта по резервному копированию баз 'ПО Участок инкассации'",
               line_before=True, line_after=True)
