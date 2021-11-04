@@ -1,12 +1,6 @@
 %~d0
 
 cd "%~p0"
+::То что выше - борьба с проблемами при запуске бат файла, перезаход в текущую папку
 
-
-
-IF echo "%username%" == "Администратор"
-	start python C:\POU_SQL_Backup\main.py
-
-
-IF echo "%username%" == "user"
-	start python C:\BACKUP\POU_SQL_Backup\main.py
+start python main.py
