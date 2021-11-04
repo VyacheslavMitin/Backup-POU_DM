@@ -8,7 +8,7 @@ import sys
 import os
 
 # Переменные
-SETTINGS_DIR = os.path.join('..', 'Configs')  # путь до каталога с SQL скриптами
+SETTINGS_DIR = os.path.join('Configs')  # путь до каталога с SQL скриптами
 settings = os.path.join(SETTINGS_DIR, 'settings.ini')
 settings_template = os.path.join(SETTINGS_DIR, 'settings_template.ini')
 security = os.path.join(SETTINGS_DIR, 'security.ini')
@@ -26,7 +26,7 @@ def checking_configs(*args: tuple) -> None:
         if os.path.isfile(arg1) is not True:
             if os.path.isfile(arg2):
                 shutil.copy(arg2, arg1)
-                # subprocess.run(['notepad.exe', arg1])  # запуск блокнота для редактирования файла
+                subprocess.run(['notepad.exe', arg1])  # запуск блокнота для редактирования файла
             else:
                 sys.exit(f"Ошибка - нет файла с настройками '{arg1}'")
 
