@@ -1,11 +1,15 @@
+# Модуль печати строки
+
+# Импорты
 import time
 
 
-def print_log(text, line_before=False, line_after=False):
+# Функции
+def print_log(text: str, line_before: bool = False, line_after: bool = False) -> None:
     """Функция формирования читабельной записи текущего действия.
     Параметры line_before=False, line_after=False для необходимости новых линий ДО и ПОСЛЕ вывода."""
 
-    def time_log():
+    def time_log() -> str:
         """Функция формирования читабельной записи текущего времени (без даты)."""
         log_time = time.strftime("%H:%M:%S")  # формат '10:10:10'
         return log_time

@@ -15,26 +15,31 @@ settings_template = os.path.join(SETTINGS_DIR, 'settings_template.ini')
 security = os.path.join(SETTINGS_DIR, 'security.ini')
 security_template = os.path.join(SETTINGS_DIR, 'security_template.ini')
 
-# Проверка существования файлов с настройками, копирование шаблонов
-if os.path.isfile(settings) is not True:
-    if os.path.isfile(settings_template):
-        shutil.copy(settings_template, settings)
-    else:
-        sys.exit("Ошибка - нет файла с настройками")
 
-if os.path.isfile(security) is not True:
-    if os.path.isfile(security_template):
-        shutil.copy(security_template, security)
-        subprocess.run(['notepad', security])  # запук блокнота для ввода пароля
-    else:
-        sys.exit("Ошибка - нет файла с настройками безопасности")
+# Функции
+def checking_configs(*args: tuple) -> None:
+    """Функция проверки существования файлов с настройками, копирование шаблонов, если необходимо"""
+    print(args)
+    if len(args) > 2:
+        sys.exit(f"Ошибка - аргументов функции 'checking_configs()' больше '2'")
+    for arg1, arg2 in args:
+        if os.path.isfile(arg1) is not True:
+            if os.path.isfile(arg2):
+                shutil.copy(arg2, arg1)
+                # subprocess.run(['notepad.exe', arg1])  # запуск блокнота для редактирования файла
+            else:
+                sys.exit(f"Ошибка - нет файла с настройками '{arg1}'")
+
+
+checking_configs((settings, settings_template))  # проверка файла с настройками
+checking_configs((security, security_template))  # проверка файла с настройками безопасности
 
 
 # Чтение конфигов
 cfg = configparser.ConfigParser()
 cfg.read(settings)  # чтение конфига с настройками путей
-ULYANOVSK = cfg.get('NAMES', 'ulyanovsk')  # имя на сервере 1С-V8
-DIMITROVGRAD = cfg.get('NAMES', 'dimitrovgrad')  # имя у Боровикова
+# ULYANOVSK = cfg.get('NAMES', 'ulyanovsk')  # имя на сервере 1С-V8
+# DIMITROVGRAD = cfg.get('NAMES', 'dimitrovgrad')  # имя у Боровикова
 TEMP_DIR = cfg.get('PATHS', 'temp_dir')  # временная папка
 LOGS_DIR = cfg.get('PATHS', 'logs_dir')  # каталог для логов
 EXE_7Z = cfg.get('PATHS', '7zip')  # путь до архиватора
