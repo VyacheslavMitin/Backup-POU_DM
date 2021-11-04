@@ -8,27 +8,34 @@ import sys
 import os
 
 # Переменные
-SETTINGS_DIR = os.path.join('Configs')  # путь до каталога с SQL скриптами
-settings = os.path.join(SETTINGS_DIR, 'settings.ini')
-settings_template = os.path.join(SETTINGS_DIR, 'settings_template.ini')
-security = os.path.join(SETTINGS_DIR, 'security.ini')
-security_template = os.path.join(SETTINGS_DIR, 'security_template.ini')
-subdivisions = os.path.join(SETTINGS_DIR, 'subdivisions.ini')
-subdivisions_template = os.path.join(SETTINGS_DIR, 'subdivisions_template.ini')
+if __name__ == '__main__':
+    SETTINGS_DIR: str = os.path.join('..', 'Configs')  # путь до каталога с SQL скриптами
+else:
+    SETTINGS_DIR: str = os.path.join('Configs')  # путь до каталога с SQL скриптами если запускается основной модуль
+
+settings: str = os.path.join(SETTINGS_DIR, 'settings.ini')
+settings_template: str = os.path.join(SETTINGS_DIR, 'settings_template.ini')
+security: str = os.path.join(SETTINGS_DIR, 'security.ini')
+security_template: str = os.path.join(SETTINGS_DIR, 'security_template.ini')
+subdivisions: str = os.path.join(SETTINGS_DIR, 'subdivisions.ini')
+subdivisions_template: str = os.path.join(SETTINGS_DIR, 'subdivisions_template.ini')
 
 
 # Функции
 def checking_configs(*args: tuple) -> None:
     """Функция проверки существования файлов с настройками, копирование шаблонов, если необходимо"""
     if len(*args) != 2:
-        sys.exit(f"Ошибка - аргументов функции 'checking_configs()' не равен '2'")
-    for arg1, arg2 in args:
-        if os.path.isfile(arg1) is not True:
-            if os.path.isfile(arg2):
-                shutil.copy(arg2, arg1)
-                subprocess.run(['notepad.exe', arg1])  # запуск блокнота для редактирования файла
+        sys.exit(f"Ошибка: кол-во аргументов функции 'checking_configs()' не равно '2'")
+    for ini_file, ini_template_file in args:
+        if os.path.isfile(ini_file) is not True:  # проверка существования основного файла настроек
+            if os.path.isfile(ini_template_file):  # проверка существования шаблона
+                shutil.copy(ini_template_file, ini_file)  # копирование шаблона
+                if sys.platform == 'win32':  # проверка ОС Windows
+                    subprocess.run(['notepad.exe', ini_file])  # запуск блокнота для редактирования файла
+                elif sys.platform == 'darwin':  # проверка ОС Mac OS
+                    pass
             else:
-                sys.exit(f"Ошибка - нет файла с настройками '{arg1}'")
+                sys.exit(f"Ошибка: нет файла с настройками '{ini_file}'")
 
 
 checking_configs((subdivisions, subdivisions_template))  # проверка файла с настройками подразделений
@@ -46,7 +53,7 @@ if os.getlogin() == ULYANOVSK:
 elif os.getlogin() == DIMITROVGRAD:
     CITY = 'dimitrovgrad'
 else:  # выход с ошибкой если не то имя логина в систему
-    sys.exit("Не подходящий логин в систему!")
+    sys.exit("Ошибка: не подходящий логин в систему!")
 
 # Чтение конфига с путями
 cfg = configparser.ConfigParser()
