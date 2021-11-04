@@ -5,62 +5,30 @@ __version__ = '3'
 
 # Импорты
 from datetime import datetime
-import configparser
-import os
-import subprocess
-import sys
 import glob
-import shutil
-from print_log import *
+from Modules.print_log import *
+from Modules.logging import *
 
-ULYANOVSK = 'Администратор'  # имя на сервере 1С-V8
-DIMITROVGRAD = 'user'  # имя у Боровикова
-
-if os.getlogin() == ULYANOVSK:
-    CITY = 'ulyanovsk'
-elif os.getlogin() == DIMITROVGRAD:
-    CITY = 'dimitrovgrad'
-else:  # выход с ошибкой если не то имя логина в систему
-    sys.exit("Не подходящий логин в систему!")
-
-ARCH_EXT = 'SevenZ'
-NOW_DATE = datetime.now().strftime('%d.%m.%Y')  # Текущая дата для работы с файлами и каталогами в формате 01.01.2021
-NOW_TIME = datetime.now().strftime('%H-%M')  # Текущее время в формате 15-00
-NOW_WEEKDAY = datetime.now().strftime('%A')  # Текущий день недели в формате Monday
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))  # путь к папке с модулем
-
-cfg = configparser.ConfigParser()
-cfg.read('settings.ini')  # чтение локального конфига
-TEMP_DIR = cfg.get('PATHS', 'temp_dir')
-LOGS_DIR = cfg.get('PATHS', 'logs_dir')
-EXE_7Z = cfg.get('PATHS', '7zip')
-PASS_7Z = cfg.get('PATHS', 'pass_7z')
-if CITY == 'ulyanovsk':
-    BACKUP_DIR_NAS = cfg.get('PATHS', 'backup_dir_ul_nas')
-    BACKUP_DIR_CLOUD = cfg.get('PATHS', 'backup_dir_ul_yandex')
-    SQL_SCRIPT = cfg.get('PATHS', 'sql_script_ul')
-elif CITY == 'dimitrovgrad':
-    BACKUP_DIR_CLOUD = cfg.get('PATHS', 'backup_dir_dm_yandex')
-    SQL_SCRIPT = cfg.get('PATHS', 'sql_script_dm')
+# Переменные
+ARCH_EXT: str = 'SevenZ'
+NOW_DATE: str = datetime.now().strftime('%d.%m.%Y')  # Текущая дата в формате 01.01.2021
+NOW_TIME: str = datetime.now().strftime('%H-%M')  # Текущее время в формате 15-00
+NOW_WEEKDAY: str = datetime.now().strftime('%A')  # Текущий день недели в формате Monday
+SCRIPT_DIR: str = os.path.dirname(os.path.abspath(__file__))  # путь к папке с модулем
 
 
 # Функции
 def make_dirs():
     """Функция создания каталогов для работы модуля"""
-    dirs = [TEMP_DIR, LOGS_DIR]
-    [os.makedirs(os.path.join(SCRIPT_DIR, dir_), exist_ok=True) for dir_ in dirs]
-
-
-def logging():
-    """Функция логирования действий модуля"""
-    pass  # TODO сделать логирование текстовым файлом
+    dirs = [TEMP_DIR, LOGS_DIR]  # список с каталогами для создания
+    [os.makedirs(os.path.join(SCRIPT_DIR, dir_), exist_ok=True) for dir_ in dirs]  # создание каталогов по списку
 
 
 def cleaning_temp():
     """Функция очистки временной папки"""
     print_log("Очистка временной папки")
 
-    [os.remove(files) for files in glob.glob(TEMP_DIR + '//' + '*')]
+    [os.remove(files) for files in glob.glob(TEMP_DIR + '//' + '*')]  # удаление всех файлов во временном каталоге
 
 
 def backuping():
@@ -76,7 +44,7 @@ def backuping():
     print_log("Окончание резервного копирования базы 'ПО Участок инкассации'")
 
 
-def compressing(base=''):
+def compressing(base: str = '') -> None:
     """Функция сжатия баз 'ПО Участок инкассации' архиватором"""
     print_log("Старт компрессии баз 'ПО Участок инкассации'")
 
@@ -107,7 +75,7 @@ def moving_files():
     """Функция перемещения баз 'ПО Участок инкассации'"""
     print_log("Копирование и перемещение сжатых баз 'ПО Участок инкассации'")
 
-    def working_with_archives(mode=''):
+    def working_with_archives(mode: str = '') -> None:
         """Функция работы с архивами баз"""
         archives_list = []  # создание листа с объектами - сжатыми базами
         [archives_list.append(archives) for archives in glob.glob(TEMP_DIR + '//' + f'*.{ARCH_EXT}')]
