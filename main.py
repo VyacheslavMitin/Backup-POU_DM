@@ -7,6 +7,7 @@ __version__ = '3'
 from datetime import datetime
 import glob
 from Modules.print_log import *
+from Modules.configs import *
 from Modules.logging import *
 
 # Переменные
