@@ -9,7 +9,7 @@ import os
 
 # Переменные
 SETTINGS_DIR = os.path.join('..', 'Configs')  # путь до каталога с SQL скриптами
-settings = os.path.join(SETTINGS_DIR, 'test.ini')
+settings = os.path.join(SETTINGS_DIR, 'settings.ini')
 settings_template = os.path.join(SETTINGS_DIR, 'settings_template.ini')
 security = os.path.join(SETTINGS_DIR, 'security.ini')
 security_template = os.path.join(SETTINGS_DIR, 'security_template.ini')
