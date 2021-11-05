@@ -8,7 +8,7 @@ import sys
 import os
 
 # Переменные
-if __name__ == '__main__':
+if os.getcwd() == os.path.dirname(os.path.abspath(__file__)):  # если импортируется модуль из каталога с модулями
     SETTINGS_DIR: str = os.path.join('..', 'Configs')  # путь до каталога с SQL скриптами
 else:
     SETTINGS_DIR: str = os.path.join('Configs')  # путь до каталога с SQL скриптами если запускается основной модуль
@@ -61,6 +61,7 @@ cfg.read(settings)  # чтение конфига с настройками пу
 TEMP_DIR = cfg.get('PATHS', 'temp_dir')  # временная папка
 LOGS_DIR = cfg.get('PATHS', 'logs_dir')  # каталог для логов
 EXE_7Z = cfg.get('PATHS', '7zip')  # путь до архиватора
+COUNT = cfg.get('NAMES', 'count')  # имя файла счетчика
 SQL_SCRIPTS_DIR = cfg.get('PATHS', 'sql_scripts_dir')  # путь до каталога с SQL скриптами
 # ветвление по подразделениям
 if CITY == 'ulyanovsk':

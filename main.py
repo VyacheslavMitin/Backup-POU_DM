@@ -1,13 +1,14 @@
 # Модуль резервного копирования баз ПО 'Участок инкассации'
 # Python 3.8
 __author__ = 'Vyacheslav Mitin <vyacheslav.mitin@gmail.com>'
-__version__ = '3'
+__version__ = '5'
 
 # Импорты
 from datetime import datetime
 import glob
 from Modules.print_log import *
 from Modules.configs import *
+from Modules.counting import *
 from Modules.logging import *
 
 # Переменные
