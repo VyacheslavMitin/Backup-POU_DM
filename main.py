@@ -1,5 +1,6 @@
 # Модуль резервного копирования баз ПО 'Участок инкассации'
 # Python 3.8
+MODULE = "Резервное копирование баз ПО 'Участок инкассации'"
 __author__ = 'Vyacheslav Mitin <vyacheslav.mitin@gmail.com>'
 __version__ = '5'
 
@@ -20,20 +21,26 @@ SCRIPT_DIR: str = os.path.dirname(os.path.abspath(__file__))  # путь к па
 
 
 # Функции
-def make_dirs():
+def welcome(name_: str, author_: str, version_: str) -> None:
+    print(f"МОДУЛЬ РАБОТЫ С '{name_}'")
+    print(f"Автор модуля: '{author_}'")
+    print(f"Версия модуля: '{version_}\n'")
+
+
+def make_dirs() -> None:
     """Функция создания каталогов для работы модуля"""
     dirs = [TEMP_DIR, LOGS_DIR]  # список с каталогами для создания
     [os.makedirs(os.path.join(SCRIPT_DIR, dir_), exist_ok=True) for dir_ in dirs]  # создание каталогов по списку
 
 
-def cleaning_temp():
+def cleaning_temp() -> None:
     """Функция очистки временной папки"""
     print_log("Очистка временной папки")
 
     [os.remove(files) for files in glob.glob(TEMP_DIR + '//' + '*')]  # удаление всех файлов во временном каталоге
 
 
-def backuping():
+def backuping() -> None:
     """Функция выгрузки баз 'ПО Участок инкассации'"""
     print_log("Старт резервного копирования базы 'ПО Участок инкассации'")
 
@@ -73,7 +80,7 @@ def compressing(base: str = '') -> None:
     print_log("Окончание компрессии баз 'ПО Участок инкассации'")
 
 
-def moving_files():
+def moving_files() -> None:
     """Функция перемещения баз 'ПО Участок инкассации'"""
     print_log("Копирование и перемещение сжатых баз 'ПО Участок инкассации'")
 
@@ -95,8 +102,7 @@ def moving_files():
 
 
 if __name__ == '__main__':  # старт
-    print_log("Начало работы скрипта по резервному копированию баз 'ПО Участок инкассации'",
-              line_before=True, line_after=True)
+    welcome(MODULE, __author__, __version__)
     cleaning_temp()  # очистка временной папки
     make_dirs()  # создание каталогов для работы модуля
     backuping()  # резервная копия SQL базы через 'SQLCMD' в 'POU*.bak' файл
