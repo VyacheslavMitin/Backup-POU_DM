@@ -24,8 +24,10 @@ subdivisions_template: str = os.path.join(SETTINGS_DIR, 'subdivisions_template.i
 # Функции
 def checking_configs(*args: tuple) -> None:
     """Функция проверки существования файлов с настройками, копирование шаблонов, если необходимо"""
+
     if len(*args) != 2:
         sys.exit(f"Ошибка: кол-во аргументов функции 'checking_configs()' не равно '2'")
+
     for ini_file, ini_template_file in args:
         if os.path.isfile(ini_file) is not True:  # проверка существования основного файла настроек
             if os.path.isfile(ini_template_file):  # проверка существования шаблона

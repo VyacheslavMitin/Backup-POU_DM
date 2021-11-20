@@ -5,38 +5,40 @@ import os
 import sys
 from configs import LOGS_DIR, COUNT
 
+# Константы
+FILE_COUNT = os.path.join(LOGS_DIR, COUNT)  # путь к файлу счетчика
 
-# if __name__ == '__main__':
-#     LOGS_DIR: str = os.path.join('..', LOGS_DIR)  # путь до каталога с логами
-# else:
-#     LOGS_DIR: str = os.path.join(LOGS_DIR)  # путь до каталога с логами, если запускается основной модуль
 
-# if not os.path.isdir(LOGS_DIR):
-#     import main
-#     main.make_dirs()
+def check_count() -> bool:
+    """Функция проверки файла-счетчика или его создания"""
 
-FILE_COUNT = os.path.join(LOGS_DIR, COUNT)
-if not os.path.isfile(FILE_COUNT):
-    with open(FILE_COUNT, 'w') as file:
-        file.write(str(0))
+    if not os.path.isfile(FILE_COUNT):  # если файла нет - создать его
+        with open(FILE_COUNT, 'w') as file:
+            file.write(str(0))
+
+    if os.path.isfile(FILE_COUNT):
+        return True
+    else:
+        sys.exit("Ошибка: нет файла-счетчика")
 
 
 def read_count() -> int:
-    """Функция чтения файла-счетчика или его создания"""
-    if os.path.isfile(FILE_COUNT):
-        with open(FILE_COUNT, 'r') as file_count:
+    """Функция чтения файла-счетчика"""
+
+    if check_count():
+        with open(FILE_COUNT, 'r') as file_count:  # чтение файла
             count: int = int(file_count.read())
             return count
     else:
         sys.exit("Ошибка: нет файла-счетчика")
 
 
-def write_count() -> None:
-    """Функция записи файла-счетчика"""
+def write_count() -> int:
+    """Функция записи файла-счетчика, а так же вывода значения нового счетчика"""
+
     count: int = read_count()
     count += 1
-    with open(FILE_COUNT, 'w') as file_count:
+    with open(FILE_COUNT, 'w') as file_count:  # перезапись файла
         file_count.write(str(count))
 
-
-write_count()
+    return count

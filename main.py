@@ -1,36 +1,45 @@
 # Модуль резервного копирования баз ПО 'Участок инкассации'
 # Python 3.8
-MODULE = "Резервное копирование баз ПО 'Участок инкассации'"
-__author__ = 'Vyacheslav Mitin <vyacheslav.mitin@gmail.com>'
-__version__ = '5'
 
 # Импорты
 from datetime import datetime
 import glob
+import subprocess
+import shutil
+import sys
+import os
 from Modules.print_log import *
 from Modules.configs import *
-from Modules.counting import *
-from Modules.logging import *
+import Modules.counting
+import Modules.logging
 
+# Константы
+MODULE = "Резервное копирование баз ПО 'Участок инкассации'"
+__author__ = 'Vyacheslav Mitin <vyacheslav.mitin@gmail.com>'
+__version__ = '5'
+ARCH_EXT = 'SevenZ'
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))  # путь к папке с модулем
+NOW_DATE = datetime.now().strftime('%d.%m.%Y')  # Текущая дата в формате 01.01.2021
+NOW_TIME = datetime.now().strftime('%H-%M')  # Текущее время в формате 15-00
+NOW_WEEKDAY = datetime.now().strftime('%A')  # Текущий день недели в формате Monday
 # Переменные
-ARCH_EXT: str = 'SevenZ'
-NOW_DATE: str = datetime.now().strftime('%d.%m.%Y')  # Текущая дата в формате 01.01.2021
-NOW_TIME: str = datetime.now().strftime('%H-%M')  # Текущее время в формате 15-00
-NOW_WEEKDAY: str = datetime.now().strftime('%A')  # Текущий день недели в формате Monday
-SCRIPT_DIR: str = os.path.dirname(os.path.abspath(__file__))  # путь к папке с модулем
 
 
 # Функции
 def welcome(name_: str, author_: str, version_: str) -> None:
     print(f"МОДУЛЬ РАБОТЫ С '{name_}'")
     print(f"Автор модуля: '{author_}'")
-    print(f"Версия модуля: '{version_}\n'")
+    print(f"Версия модуля: '{version_}'")
+    print(f"Запущено в '{Modules.logging.write_count()}-й раз\n'")
 
 
 def make_dirs() -> None:
     """Функция создания каталогов для работы модуля"""
     dirs = [TEMP_DIR, LOGS_DIR]  # список с каталогами для создания
     [os.makedirs(os.path.join(SCRIPT_DIR, dir_), exist_ok=True) for dir_ in dirs]  # создание каталогов по списку
+
+    if not os.path.isdir(os.path.join(SCRIPT_DIR, TEMP_DIR)) or not os.path.isdir(os.path.join(SCRIPT_DIR, LOGS_DIR)):
+        sys.exit("Ошибка: не существуют каталоги для работы модуля")
 
 
 def cleaning_temp() -> None:
@@ -81,7 +90,7 @@ def compressing(base: str = '') -> None:
 
 
 def moving_files() -> None:
-    """Функция перемещения баз 'ПО Участок инкассации'"""
+    """Функция копирования и перемещения баз 'ПО Участок инкассации'"""
     print_log("Копирование и перемещение сжатых баз 'ПО Участок инкассации'")
 
     def working_with_archives(mode: str = '') -> None:
@@ -102,12 +111,14 @@ def moving_files() -> None:
 
 
 if __name__ == '__main__':  # старт
+    make_dirs()  # создание каталогов для работы модуля
+
     welcome(MODULE, __author__, __version__)
     cleaning_temp()  # очистка временной папки
-    make_dirs()  # создание каталогов для работы модуля
     backuping()  # резервная копия SQL базы через 'SQLCMD' в 'POU*.bak' файл
     compressing()  # сжатие файла 'POU*.bak' в архив 7zip
     moving_files()  # копирование и перемещение файлов
     cleaning_temp()  # очистка временной папки
+
     print_log("Окончание работы скрипта по резервному копированию баз 'ПО Участок инкассации'",
               line_before=True, line_after=True)

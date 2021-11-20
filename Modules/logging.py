@@ -4,14 +4,14 @@
 import os
 import time
 from Modules.print_log import *
+from Modules.counting import read_count, write_count
 from datetime import datetime
-import scratch
 
-# Переменные
+
+# Константы
 NOW_DATE: str = datetime.now().strftime('%d.%m.%Y')  # Текущая дата в формате 01.01.2021
 NOW_TIME: str = datetime.now().strftime('%H-%M')  # Текущее время в формате 15-00
 NOW_WEEKDAY: str = datetime.now().strftime('%A')  # Текущий день недели в формате Monday
-
 LOGS_DIR = os.path.join('..', '+LOGS')
 LOG_FILE = os.path.join(LOGS_DIR, f'Log_SQL_{NOW_DATE}_{NOW_WEEKDAY}_{NOW_TIME}.txt')
 
@@ -19,8 +19,9 @@ LOG_FILE = os.path.join(LOGS_DIR, f'Log_SQL_{NOW_DATE}_{NOW_WEEKDAY}_{NOW_TIME}.
 print(__name__)
 print(os.path.dirname(os.path.abspath(__file__)))
 
+
 # Функции
-def alignmenting(text, alignment):
+def alignmenting(text, alignment) -> str:
     if alignment == 'centered':
         text = f"{text:=^80}\n"
     elif alignment == 'left':
@@ -33,10 +34,10 @@ def alignmenting(text, alignment):
 def logging_new() -> None:
     """Функция создания нового лог-файла"""
     with open(LOG_FILE, 'w') as log_file:
-        t = "Лог действий модуля резервного копирования SQL-базы 'ПО Участок инкассации'"
-        log_file.write(alignmenting(t, alignment='centered'))
-        t = f"Запущено в '{scratch.write_count()}-й' раз"
-        log_file.write(alignmenting(t, alignment='right'))
+        text = "Лог действий модуля резервного копирования SQL-базы 'ПО Участок инкассации'"
+        log_file.write(alignmenting(text, alignment='centered'))
+        text = f"Запущено в '{write_count()}-й' раз"
+        log_file.write(alignmenting(text, alignment='right'))
 
 
 def logging(logging_text: str) -> None:
