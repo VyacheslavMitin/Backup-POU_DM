@@ -6,9 +6,10 @@ __version__ = '3'
 # Импорты
 from datetime import datetime
 import glob
-from Modules.print_log import *
+import time
+from Modules.print_log import print_log
 from Modules.configs import *
-from Modules.logging import *
+# from Modules.logging import *
 
 # Переменные
 ARCH_EXT: str = 'SevenZ'

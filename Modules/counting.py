@@ -3,7 +3,7 @@
 # Импорты
 import os
 import sys
-from configs import LOGS_DIR, COUNT
+from Modules.configs import LOGS_DIR, COUNT
 
 # Константы
 FILE_COUNT = os.path.join(LOGS_DIR, COUNT)  # путь к файлу счетчика
