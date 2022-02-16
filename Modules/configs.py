@@ -8,7 +8,7 @@ import sys
 import os
 
 # Переменные
-if __name__ == '__main__':
+if os.getcwd() == os.path.dirname(os.path.abspath(__file__)):  # если импортируется модуль из каталога с модулями
     SETTINGS_DIR: str = os.path.join('..', 'Configs')  # путь до каталога с SQL скриптами
 else:
     SETTINGS_DIR: str = os.path.join('Configs')  # путь до каталога с SQL скриптами если запускается основной модуль
@@ -24,8 +24,10 @@ subdivisions_template: str = os.path.join(SETTINGS_DIR, 'subdivisions_template.i
 # Функции
 def checking_configs(*args: tuple) -> None:
     """Функция проверки существования файлов с настройками, копирование шаблонов, если необходимо"""
+
     if len(*args) != 2:
         sys.exit(f"Ошибка: кол-во аргументов функции 'checking_configs()' не равно '2'")
+
     for ini_file, ini_template_file in args:
         if os.path.isfile(ini_file) is not True:  # проверка существования основного файла настроек
             if os.path.isfile(ini_template_file):  # проверка существования шаблона
@@ -61,6 +63,7 @@ cfg.read(settings)  # чтение конфига с настройками пу
 TEMP_DIR = cfg.get('PATHS', 'temp_dir')  # временная папка
 LOGS_DIR = cfg.get('PATHS', 'logs_dir')  # каталог для логов
 EXE_7Z = cfg.get('PATHS', '7zip')  # путь до архиватора
+COUNT = cfg.get('NAMES', 'count')  # имя файла счетчика
 SQL_SCRIPTS_DIR = cfg.get('PATHS', 'sql_scripts_dir')  # путь до каталога с SQL скриптами
 # ветвление по подразделениям
 if CITY == 'ulyanovsk':
