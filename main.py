@@ -93,9 +93,9 @@ def moving_files():
         working_with_archives(mode='move')
 
 
-if __name__ == '__main__':  # старт
-    print_log("Начало работы скрипта по резервному копированию баз 'ПО Участок инкассации'",
-              line_before=True, line_after=True)
+def main():
+    print("НАЧАЛО РАБОТЫ СКРИПТА ПО РЕЗЕРВНОМУ КОПИРОВАНИЮ БАЗ 'ПО УЧАСТОК ИНКАССАЦИИ'\n")
+    print_log("Начало работы")
     cleaning_temp()  # очистка временной папки
     make_dirs()  # создание каталогов для работы модуля
     backuping()  # резервная копия SQL базы через 'SQLCMD' в 'POU*.bak' файл
@@ -104,3 +104,8 @@ if __name__ == '__main__':  # старт
     cleaning_temp()  # очистка временной папки
     print_log("Окончание работы скрипта по резервному копированию баз 'ПО Участок инкассации'",
               line_before=True, line_after=True)
+    time.sleep(5)
+
+
+if __name__ == '__main__':  # старт
+    main()
